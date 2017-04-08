@@ -1,10 +1,22 @@
 USER = rails
+SUDOER = tom
 HOME = ~${USER}
-PLUGINS = ${USER}/.rbenv/plugins
+SUDOER_HOME = ~${SUDOER}
+PLUGINS = ${HOME}/.rbenv/plugins
 
-all:	upgrade once
+all:	sudoer upgrade once
 
-once:	/usr/bin/git rbenv rbenv-extras
+once:	/usr/bin/git rbenv rbenv-extras gemrc
+
+# The first time this target is made on Ubuntu 16.04, it
+# it is expected that it will be run as root, because
+# there probably won't be any sudoer.
+sudoer:	${SUDOER_HOME}
+
+${SUDOER_HOME}:
+	@echo
+	sudo adduser ${SUDOER}
+	sudo usermod -aG sudo ${SUDOER}
 
 upgrade:	apt-get-update apt-get-upgrade
 
@@ -44,9 +56,14 @@ rbenv-function:	${HOME}/.rbenv
 ${PLUGINS}/rbenv-vars:
 	@echo
 	@echo '*** Installing rbenv-vars ***'
-	sudo su - ${USER} -c "git clone https://github.com/sstephenson/rbenv-vars.git ${HOME}/.rbenv/plugins/rbenv-vars"
+	-sudo su - ${USER} -c 'git clone https://github.com/sstephenson/rbenv-vars.git ${HOME}/.rbenv/plugins/rbenv-vars'
 
 ${PLUGINS}/ruby-build:
 	@echo
 	@echo '*** Installing ruby-build ***'
-	sudo su - ${USER} -c "git clone https://github.com/rbenv/ruby-build.git ${HOME}/.rbenv/plugins/ruby-build"
+	-sudo su - ${USER} -c 'git clone https://github.com/rbenv/ruby-build.git ${HOME}/.rbenv/plugins/ruby-build'
+
+gemrc:
+	@echo
+	@echo '*** Set up gems so that documentation is not automatically installed with them ***'
+	sudo su - ${USER} -c 'if ! grep "gem: --no-rdoc --no-ri" ${HOME}/.gemrc >/dev/null; then echo "gem: --no-rdoc --no-ri" >>${HOME}/.gemrc; fi'
