@@ -50,7 +50,8 @@ apt-get-upgrade:	apt-get-update
 rvm-implode:
 	@echo
 	@echo '*** Remove rvm ***'
-	sudo "rvm implode"
+	sudo 'rvm implode'
+	@echo 'Edit .bashrc manually to remove rvm from paths'
 
 rbenv:	${HOME}/.rbenv rbenv-path rbenv-function
 
