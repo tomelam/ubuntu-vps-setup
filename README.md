@@ -8,3 +8,5 @@ the Apt repository setup, which normally shouldn't matter much).
 
 The main target of this Makefile, 'all', sets up Git, rbenv, rbenv-vars, and ruby-build.
 Another target, 'apt-get', updates and upgrades the Apt repository.
+
+See also https://gist.github.com/framallo/6283959 .
