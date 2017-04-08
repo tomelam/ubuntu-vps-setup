@@ -6,7 +6,7 @@ PLUGINS = ${HOME}/.rbenv/plugins
 
 all:	ssh sudoer upgrade once
 
-once:	/usr/bin/git rbenv rbenv-extras gemrc
+once:	/usr/bin/git rvm-implode rbenv rbenv-extras gemrc
 
 # See http://unix.stackexchange.com/a/200256/223943 .
 # Note: This is a fix for incoming and outgoing ssh.
@@ -14,13 +14,13 @@ once:	/usr/bin/git rbenv rbenv-extras gemrc
 ssh:
 	@echo
 	@echo '*** Prevent SSH from freezing ***'
-	sudo su - root -c 'if ! grep "# val0x00ff fix" /etc/ssh/ssh_config >/dev/null; then echo "Host *" >>/etc/ssh/ssh_config; fi'
-	sudo su - root -c 'if ! grep "# val0x00ff fix" /etc/ssh/ssh_config >/dev/null; then echo "ServerAliveInterval 100" >>/etc/ssh/ssh_config; fi'
-	sudo su - root -c 'if ! grep "# val0x00ff fix" /etc/ssh/ssh_config >/dev/null; then echo "# val0x00ff fix" >>/etc/ssh/ssh_config; fi'
-	sudo su - root -c 'if ! grep "# val0x00ff fix" /etc/ssh/sshd_config >/dev/null; then echo "ClientAliveInterval 60" >>/etc/ssh/ssh_config; fi'
-	sudo su - root -c 'if ! grep "# val0x00ff fix" /etc/ssh/sshd_config >/dev/null; then echo "TCPKeepAlive yes" >>/etc/ssh/ssh_config; fi'
-	sudo su - root -c 'if ! grep "# val0x00ff fix" /etc/ssh/sshd_config >/dev/null; then echo "ClientAliveCountMax 10000" >>/etc/ssh/ssh_config; fi'
-	sudo su - root -c 'if ! grep "# val0x00ff fix" /etc/ssh/sshd_config >/dev/null; then echo "# val0x00ff fix" >>/etc/ssh/ssh_config; fi'
+	#-sudo su - root -c 'if ! grep "# val0x00ff fix" /etc/ssh/ssh_config >/dev/null; then echo "Host *" >>/etc/ssh/ssh_config; fi'
+	-sudo su - root -c 'if ! grep "# val0x00ff fix" /etc/ssh/ssh_config >/dev/null; then echo "ServerAliveInterval 100" >>/etc/ssh/ssh_config; fi'
+	-sudo su - root -c 'if ! grep "# val0x00ff fix" /etc/ssh/ssh_config >/dev/null; then echo "# val0x00ff fix" >>/etc/ssh/ssh_config; fi'
+	-sudo su - root -c 'if ! grep "# val0x00ff fix" /etc/ssh/sshd_config >/dev/null; then echo "ClientAliveInterval 60" >>/etc/ssh/sshd_config; fi'
+	#-sudo su - root -c 'if ! grep "# val0x00ff fix" /etc/ssh/sshd_config >/dev/null; then echo "TCPKeepAlive yes" >>/etc/ssh/sshd_config; fi'
+	-sudo su - root -c 'if ! grep "# val0x00ff fix" /etc/ssh/sshd_config >/dev/null; then echo "ClientAliveCountMax 10000" >>/etc/ssh/sshd_config; fi'
+	-sudo su - root -c 'if ! grep "# val0x00ff fix" /etc/ssh/sshd_config >/dev/null; then echo "# val0x00ff fix" >>/etc/ssh/sshd_config; fi'
 	@echo 'Now restart the ssh server'
 
 # The first time this target is made on Ubuntu 16.04, it
@@ -47,6 +47,11 @@ apt-get-upgrade:	apt-get-update
 	@echo
 	sudo apt-get install git
 
+rvm-implode:
+	@echo
+	@echo '*** Remove rvm ***'
+	sudo "rvm implode"
+
 rbenv:	${HOME}/.rbenv rbenv-path rbenv-function
 
 ${HOME}/.rbenv:
@@ -71,12 +76,12 @@ rbenv-function:	${HOME}/.rbenv
 ${PLUGINS}/rbenv-vars:
 	@echo
 	@echo '*** Installing rbenv-vars ***'
-	-sudo su - ${USER} -c 'git clone https://github.com/sstephenson/rbenv-vars.git ${HOME}/.rbenv/plugins/rbenv-vars'
+	sudo su - ${USER} -c 'git clone https://github.com/sstephenson/rbenv-vars.git ${HOME}/.rbenv/plugins/rbenv-vars'
 
 ${PLUGINS}/ruby-build:
 	@echo
 	@echo '*** Installing ruby-build ***'
-	-sudo su - ${USER} -c 'git clone https://github.com/rbenv/ruby-build.git ${HOME}/.rbenv/plugins/ruby-build'
+	sudo su - ${USER} -c 'git clone https://github.com/rbenv/ruby-build.git ${HOME}/.rbenv/plugins/ruby-build'
 
 gemrc:
 	@echo
