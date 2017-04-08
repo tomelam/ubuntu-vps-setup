@@ -1,12 +1,27 @@
-USER = rails
 SUDOER = tom
-HOME = ~${USER}
 SUDOER_HOME = ~${SUDOER}
+USER = rails
+HOME = ~${USER}
 PLUGINS = ${HOME}/.rbenv/plugins
 
-all:	sudoer upgrade once
+all:	ssh sudoer upgrade once
 
 once:	/usr/bin/git rbenv rbenv-extras gemrc
+
+# See http://unix.stackexchange.com/a/200256/223943 .
+# Note: This is a fix for incoming and outgoing ssh.
+# TODO: Check for existence of these lines properly and check only once per config file.
+ssh:
+	@echo
+	@echo '*** Prevent SSH from freezing ***'
+	sudo su - root -c 'if ! grep "# val0x00ff fix" /etc/ssh/ssh_config >/dev/null; then echo "Host *" >>/etc/ssh/ssh_config; fi'
+	sudo su - root -c 'if ! grep "# val0x00ff fix" /etc/ssh/ssh_config >/dev/null; then echo "ServerAliveInterval 100" >>/etc/ssh/ssh_config; fi'
+	sudo su - root -c 'if ! grep "# val0x00ff fix" /etc/ssh/ssh_config >/dev/null; then echo "# val0x00ff fix" >>/etc/ssh/ssh_config; fi'
+	sudo su - root -c 'if ! grep "# val0x00ff fix" /etc/ssh/sshd_config >/dev/null; then echo "ClientAliveInterval 60" >>/etc/ssh/ssh_config; fi'
+	sudo su - root -c 'if ! grep "# val0x00ff fix" /etc/ssh/sshd_config >/dev/null; then echo "TCPKeepAlive yes" >>/etc/ssh/ssh_config; fi'
+	sudo su - root -c 'if ! grep "# val0x00ff fix" /etc/ssh/sshd_config >/dev/null; then echo "ClientAliveCountMax 10000" >>/etc/ssh/ssh_config; fi'
+	sudo su - root -c 'if ! grep "# val0x00ff fix" /etc/ssh/sshd_config >/dev/null; then echo "# val0x00ff fix" >>/etc/ssh/ssh_config; fi'
+	@echo 'Now restart the ssh server'
 
 # The first time this target is made on Ubuntu 16.04, it
 # it is expected that it will be run as root, because
