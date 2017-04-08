@@ -1,43 +1,52 @@
-USER = tom
+USER = rails
 HOME = ~${USER}
+PLUGINS = ${USER}/.rbenv/plugins
 
-all:	git rbenv rbenv-vars rbenv-build
+all:	upgrade once
 
-apt-get:	apt-get-update apt-get-upgrade
+once:	/usr/bin/git rbenv rbenv-extras
+
+upgrade:	apt-get-update apt-get-upgrade
 
 apt-get-update:
+	@echo
 	sudo apt-get update
 
 apt-get-upgrade:	apt-get-update
+	@echo
 	sudo apt-get upgrade
 
-git:	/usr/bin/git
-
 /usr/bin/git:
+	@echo
 	sudo apt-get install git
 
 rbenv:	${HOME}/.rbenv rbenv-path rbenv-function
 
 ${HOME}/.rbenv:
+	@echo
+	@echo '*** Installing rbenv ***'
 	sudo su - ${USER} -c "git clone https://github.com/rbenv/rbenv.git ${HOME}/.rbenv"
 
-# In the grep command below, ' ends a single-quoted string and \''
-# adds a single quote then begins another single-quoted string.
-# See http://unix.stackexchange.com/a/23349/223943 .
-rbenv-path:
-	@echo 'Testing that .rbenv/bin will be prepended to $$PATH'
-	-sudo su - ${USER} -c 'if ! grep "export PATH=\".HOME/\.rbenv/bin:.PATH" ${HOME}/.bashrc >/dev/null; then echo "export PATH=''$$HOME/.rbenv/bin:PATH"'' >> /tmp/bashrc; fi'
+rbenv-extras:	${PLUGINS}/rbenv-vars ${PLUGINS}/ruby-build
 
-rbenv-function:
-	echo "function"
-	#if grep 'eval "$$(rbenv init -)"' ${HOME}/.bashrc; then echo 'eval "$$(rbenv init -)"' >> ~/.bashrc; fi
+# On the subject of quoting and escaping, see http://unix.stackexchange.com/a/23349/223943 and http://stackoverflow.com/a/7860705/438912 .
+rbenv-path:	${HOME}/.rbenv
+	@echo
+	@echo '*** Setting up rbenv path ***'
+	-sudo su - ${USER} -c 'if ! grep '\''export PATH=\$$HOME/.rbenv/bin:\$$PATH'\'' ${HOME}/.bashrc >/dev/null; then echo export PATH=\$$HOME/.rbenv/bin:\$$PATH >>${HOME}/.bashrc; fi'
+	@echo 'User ${USER} must source his .bashrc .'
 
-rbenv-vars:	${HOME}/.rbenv/plugins/rbenv-vars
+rbenv-function:	${HOME}/.rbenv
+	@echo
+	@echo '*** Setting up rbenv to be a function ***'
+	-sudo su - ${USER} -c 'if ! grep '\''eval \"$$(rbenv init -)\"'\'' ${HOME}/.bashrc >/dev/null; then echo '\''eval "$$(rbenv init -)"'\'' >>${HOME}/.bashrc; fi'
 
-${HOME}/.rbenv/plugins/rbenv-vars:
+${PLUGINS}/rbenv-vars:
+	@echo
+	@echo '*** Installing rbenv-vars ***'
 	sudo su - ${USER} -c "git clone https://github.com/sstephenson/rbenv-vars.git ${HOME}/.rbenv/plugins/rbenv-vars"
 
-rbenv-build:	${HOME}/.rbenv/plugins/ruby-build
-
-${HOME}/.rbenv/plugins/ruby-build:
+${PLUGINS}/ruby-build:
+	@echo
+	@echo '*** Installing ruby-build ***'
 	sudo su - ${USER} -c "git clone https://github.com/rbenv/ruby-build.git ${HOME}/.rbenv/plugins/ruby-build"
