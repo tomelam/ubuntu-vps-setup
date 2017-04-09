@@ -4,7 +4,7 @@ USER = rails
 HOME = ~${USER}
 PLUGINS = ${HOME}/.rbenv/plugins
 
-all:	ssh sudoer upgrade once
+all:	ssh sudoer ruby upgrade once
 
 once:	/usr/bin/git rvm-implode rbenv rbenv-extras gemrc
 
@@ -33,6 +33,16 @@ ${SUDOER_HOME}:
 	sudo adduser ${SUDOER}
 	sudo usermod -aG sudo ${SUDOER}
 
+# TODO: Don't change .bash_profile if it already sets up rbenv.
+ruby:	${HOME}/.rbenv
+	@echo
+	-sudo fallocate -l 1G /swapfile
+	sudo chmod 600 /swapfile
+	-sudo mkswap /swapfile
+	-sudo swapon /swapfile
+	sudo su - ${USER} -c 'rbenv install 2.4.0'
+	sudo su - ${USER} -c 'rbenv global 2.4.0'
+
 upgrade:	apt-get-update apt-get-upgrade
 
 apt-get-update:
@@ -51,10 +61,11 @@ rvm-implode:
 	@echo
 	@echo '*** Remove rvm ***'
 	sudo 'rvm implode'
-	@echo 'Edit .bashrc manually to remove rvm from paths'
+	@echo 'Edit .bashrc, .bash_profile, and .profile manually to remove rvm from paths'
 
 rbenv:	${HOME}/.rbenv rbenv-path rbenv-function
 
+# TODO: Don't change .bash_profile if it already contains the lines needed for rbenv.
 ${HOME}/.rbenv:
 	@echo
 	@echo '*** Installing rbenv ***'
@@ -66,13 +77,14 @@ rbenv-extras:	${PLUGINS}/rbenv-vars ${PLUGINS}/ruby-build
 rbenv-path:	${HOME}/.rbenv
 	@echo
 	@echo '*** Setting up rbenv path ***'
-	-sudo su - ${USER} -c 'if ! grep '\''export PATH=\$$HOME/.rbenv/bin:\$$PATH'\'' ${HOME}/.bashrc >/dev/null; then echo export PATH=\$$HOME/.rbenv/bin:\$$PATH >>${HOME}/.bashrc; fi'
-	@echo 'User ${USER} must source his .bashrc .'
+	-sudo su - ${USER} -c 'if ! grep '\''export PATH=\$$HOME/.rbenv/bin:\$$PATH'\'' ${HOME}/.profile >/dev/null; then echo export PATH=\$$HOME/.rbenv/bin:\$$PATH >>${HOME}/.bash_profile; fi'
+	@echo 'User ${USER} must source his .bash_profile .'
 
 rbenv-function:	${HOME}/.rbenv
 	@echo
 	@echo '*** Setting up rbenv to be a function ***'
-	-sudo su - ${USER} -c 'if ! grep '\''eval \"$$(rbenv init -)\"'\'' ${HOME}/.bashrc >/dev/null; then echo '\''eval "$$(rbenv init -)"'\'' >>${HOME}/.bashrc; fi'
+	-sudo su - ${USER} -c 'if ! grep '\''eval \"$$(rbenv init -)\"'\'' ${HOME}/.profile >/dev/null; then echo '\''eval "$$(rbenv init -)"'\'' >>${HOME}/.bash_profile; fi'
+	@echo 'User ${USER} must source his .bash_profile .'
 
 ${PLUGINS}/rbenv-vars:
 	@echo
