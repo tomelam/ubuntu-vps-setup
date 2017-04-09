@@ -1,3 +1,5 @@
+# TODO: Check whether this Makefile should use 'sudo -i -u' in place of 'sudo su -' in some places.
+
 SUDOER = tom
 SUDOER_HOME = ~${SUDOER}
 USER = rails
