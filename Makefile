@@ -8,6 +8,7 @@ PLUGINS = ${HOME}/.rbenv/plugins
 
 all:	ssh sudoer ruby upgrade once
 
+# TODO: Maybe use rbenv-installer from GitHub.
 once:	/usr/bin/git rvm-implode rbenv rbenv-extras gemrc
 
 # See http://unix.stackexchange.com/a/200256/223943 .
