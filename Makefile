@@ -19,7 +19,6 @@ ssh:
 	@echo '*** Prevent SSH from freezing ***'
 	#-sudo su - root -c 'if ! grep "# val0x00ff fix" /etc/ssh/ssh_config >/dev/null; then echo "Host *" >>/etc/ssh/ssh_config; fi'
 	-sudo su - root -c 'if ! grep "# val0x00ff fix" /etc/ssh/ssh_config >/dev/null; then echo "ServerAliveInterval 100" >>/etc/ssh/ssh_config; fi'
-	-sudo su - root -c 'if ! grep "# val0x00ff fix" /etc/ssh/ssh_config >/dev/null; then echo "# val0x00ff fix" >>/etc/ssh/ssh_config; fi'
 	-sudo su - root -c 'if ! grep "# val0x00ff fix" /etc/ssh/sshd_config >/dev/null; then echo "ClientAliveInterval 60" >>/etc/ssh/sshd_config; fi'
 	#-sudo su - root -c 'if ! grep "# val0x00ff fix" /etc/ssh/sshd_config >/dev/null; then echo "TCPKeepAlive yes" >>/etc/ssh/sshd_config; fi'
 	-sudo su - root -c 'if ! grep "# val0x00ff fix" /etc/ssh/sshd_config >/dev/null; then echo "ClientAliveCountMax 10000" >>/etc/ssh/sshd_config; fi'
